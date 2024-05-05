@@ -30,7 +30,7 @@ void RotacionaEsquerda(Arvore &); // ROTACIONA A ESQUERDA
 void RotacionaDireita(Arvore &); // ROTACIONA A DIREITA
 void Gotoxy(int, int);
 void ImprimeArvore(Arvore);
-void imprimeArvore(Arvore, int, int);
+void imprimeArvore(Arvore, int*, int, int*);
 void LimpaTela();
 
 // INSERCAO DE UM NO NA ARVORE - RECURSIVA
@@ -50,41 +50,70 @@ void InsereAbbRecW (Arvore &A, int Info){
   }
 }
 
+void PredefineArvore(Arvore &A) {
+  InsereAbbRec(A, 4);
+  InsereAbbRec(A, 1);
+  // InsereAbbRecW(A, 2);
+  // InsereAbbRecW(A, 8);
+  // InsereAbbRecW(A, 7);
+  // InsereAbbRecW(A, 9);
+  // InsereAbbRecW(A, 6);
+}
+
+void Menu(Arvore A) {
+  char opt = ' ';
+  int value = 0;
+
+  do {
+    ImprimeArvore(A);
+    cout << "Selecione a opção:" << endl;
+    cout << "a - Adicionar elemento" << endl;
+    cout << "d - Deletar elemento" << endl;
+    cout << "x - Pre-definir com valores" << endl;
+    cout << "r - Resetar arvore" << endl;
+    cout << "s - Sair" << endl;
+
+    cin >> opt;
+    switch (opt){
+      case 'a':
+        cout << "Digite o valor a ser adicionado: ";
+        cin >> value;
+        InsereAbbRec(A, value);
+        break;
+      case 'd':
+        cout << "Digite o valor a ser removido: ";
+        cin >> value;
+        break;
+      case 'x':
+        if (ArvoreVazia(A)) PredefineArvore(A);
+        else cout << "Arvore precisa estar vazia";
+        break;
+      case 'r':
+        ApagaArvore(A);
+        break;
+      case 'q':
+        break;
+      default:
+        break;
+    }
+
+  } while (opt != 's');
+}
+
 int main () {
-   Arvore A;
-   IniciaArvore(A);
-
-   if(ArvoreVazia(A))
-      cout << "A arvore esta vazia." << endl;
-   else cout << "A arvore nao esta Vazia." << endl;
-
-  InsereAbbRecW(A, 3);
-  InsereAbbRecW(A, 1);
-  //  InsereAbbRec(A, 2);
-  InsereAbbRecW(A, 8);
-  InsereAbbRec(A, 7);
-  InsereAbbRecW(A, 9);
-  InsereAbbRec(A, 6);
-
-  ImprimeArvore(A);
-
-   cout << endl;
-   cout << "Pre-ordem: ";
-   Preordem(A);
-
-  //  cout << endl;
-  //  cout << "A arvore tem " << ContaNos(A) << " nos." << endl;
-
-   ApagaArvore(A);
-
-   return 0;
+  Arvore A;
+  IniciaArvore(A);
+  PredefineArvore(A);
+  Menu(A);
+  ApagaArvore(A);
+  return 0;
 }
 
 // IMPLEMENTACAO DAS FUNCOES
 
 // INICIA A ARVORE
 void IniciaArvore(Arvore &Raiz){
-    Raiz = nullptr;
+  Raiz = nullptr;
 }
 
 // ARVORE VAZIA
@@ -122,6 +151,9 @@ int CalculaFatorBalanceamento(Arvore A) {
   if(A->Dir != nullptr) {
     FbDir = A->Dir->FatorBalanceamento;
   }
+
+  A->FatorBalanceamento = FbDir - FbEsq > 0 ? FbDir + 1 : FbEsq + 1;
+
   return FbDir - FbEsq;
 }
 
@@ -144,7 +176,6 @@ void RotacionaEsquerda(Arvore &A){
   Aux->Esq = A;
   A = Aux;
 }
-
 
 // INSERCAO DE UM NO NA ARVORE - RECURSIVA
 void InsereAbbRec (Arvore &A, int Info){
@@ -170,6 +201,7 @@ void InsereAbbRec (Arvore &A, int Info){
     RotacionaDireita(A);
   }
 }
+
 // Posiciona cursor
 void Gotoxy(int x, int y) {
   cout << "\033[" << y << ";" << x << "H";
@@ -179,34 +211,60 @@ void LimpaTela() {
   std::cout << "\033[2J\033[1;1H";
 }
 
-void imprimeArvore(Arvore A, int x, int y) {
+void imprimeArvore(Arvore A, int *x, int y, int posParentX, int *retCurrent) {
   if(A == nullptr) return;
 
-  Gotoxy(x, y);
+  if (A->Esq != nullptr) {
+    int posChildX = *x;
+    imprimeArvore(A->Esq, x, y + 3, -1, &posChildX);
+
+    // Desenha ramo do pai até nó esquerdo.
+    for (int i = posChildX + 4; i < *x + 2; i+= 1) {
+      Gotoxy(i, y + 2);
+      if(i + 1 == *x + 2) {
+        cout << "+";
+      } else {
+        cout << "-";
+      }    
+    }
+  }
+  
+  int aux = *x;
+  Gotoxy(aux + 3, y - 1); // 
+  cout << "+";
+
+  // Nó esquerdo retorna para o pai sua posicao para o pai desenhar o ramo
+  if (retCurrent != nullptr ) *retCurrent = aux;  
+  Gotoxy(aux, y); // Imprime nó
   cout << "(" << A->Info << " <" << A->FatorBalanceamento << ">" << ")";
 
-  int offsetX = 4;
-  int offsetY = 2;
-
-  // Desenha conexoes da arvore
-  if (A->Esq != nullptr) {
-    Gotoxy(x - offsetX + 3, y + 1); // Move para a posição do próximo nó
-    cout << "+"; // Desenha a linha horizontal para o filho esquerdo
-    imprimeArvore(A->Esq, x - offsetX, y + offsetY);
+  Gotoxy(aux + 1, y + 1); // Imprime saida dos ramos
+  cout << "|   |";
+  
+  // Desenha ramo do nó direito até o pai.
+  for (int i = aux + 2; posParentX > 0 && i > posParentX + 4; i-= 1) {
+    Gotoxy(i, y - 1);
+    if(i - 1 == posParentX + 4) {
+      cout << "+";
+    } else {
+      cout << "-";
+    }    
   }
+  // Calcula posição do proximo nó
+  *x += 8;
 
-  if (A->Dir != nullptr) {
-    Gotoxy(x + offsetX + 3, y + 1); // Move para a posição do próximo nó
-    cout << "+"; // Desenha a linha horizontal para o filho esquerdo
-    imprimeArvore(A->Dir, x + offsetX, y + offsetY);
-  }  
+  if (A->Dir != nullptr) { // A recursão a direita recebe posição do pai para desenho do ramo
+    imprimeArvore(A->Dir, x, y + 3, aux, nullptr);
+  }
 }
 
 // Imprime arvore no console
 void ImprimeArvore(Arvore A) {
+  int x = 10;
   LimpaTela();
-  imprimeArvore(A, 40, 3);
-  cout << endl << endl << endl;
+  imprimeArvore(A, &x, 1, -1, nullptr);
+  Gotoxy(0, 15);
+  cout << endl;
 }
 
 // CAMINHAMENTO EM PRE-ORDEM
