@@ -41,7 +41,6 @@ int main () {
   cout << "Arvore inicial(pre-ordem):  " << endl;
   Preordem(A);
   cout << endl;
-
   
   cout << "A arvore tem " << ContaNos(A) << " nos." << endl;
 
