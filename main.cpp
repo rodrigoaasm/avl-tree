@@ -20,17 +20,20 @@ int main () {
 }
 
 void PredefineArvore(Arvore &A) {
-  InsereAbbRec(A, 4);
-  InsereAbbRec(A, 1);
-  InsereAbbRec(A, 3);
+  InsereAbbRec(A, 400);
   InsereAbbRec(A, 100);
+  InsereAbbRec(A, 300);
+  InsereAbbRec(A, 1000);
+  InsereAbbRec(A, 500);
   InsereAbbRec(A, 50);
+  InsereAbbRec(A, 350);
 }
 
 void Menu(Arvore A) {
   char opt = ' ';
   int value = 0;
 
+  LimpaTela();
   do {
     ImprimeArvore(A);
     cout << "Selecione a opção:" << endl;
@@ -45,17 +48,23 @@ void Menu(Arvore A) {
       case 'a':
         cout << "Digite o valor a ser adicionado: ";
         cin >> value;
+        LimpaTela();
         InsereAbbRec(A, value);
         break;
       case 'd':
-        cout << "Digite o valor a ser removido: ";
+        cout << "Digite o valor a ser deletado: ";
         cin >> value;
+        LimpaTela();
+        RemoveAbbRec(A, value);
         break;
-      case 'x':
-        if (ArvoreVazia(A)) PredefineArvore(A);
-        else cout << "Arvore precisa estar vazia";
+      case 'x':        
+        if (ArvoreVazia(A)) {
+          PredefineArvore(A);
+          LimpaTela();
+        } else cout << "Arvore precisa estar vazia!";
         break;
       case 'r':
+        LimpaTela();
         ApagaArvore(A);
         break;
       case 'q':
@@ -125,8 +134,7 @@ void imprimeArvore(Arvore A, int *x, int y, int posParentX, int *retCurrent) {
 
 // Imprime arvore no console
 void ImprimeArvore(Arvore A) {
-  int x = 10;
-  LimpaTela();
+  int x = 40;
   imprimeArvore(A, &x, 1, -1, nullptr);
   Gotoxy(0, 15);
   cout << endl;
