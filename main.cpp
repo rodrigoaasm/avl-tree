@@ -5,7 +5,7 @@ using namespace std;
 
 void Gotoxy(int, int);
 void ImprimeArvore(Arvore);
-void imprimeArvore(Arvore, int*, int, int*);
+void doImprimeArvore(Arvore, int*, int, int*);
 void LimpaTela();
 void Menu(Arvore);
 void PredefineArvore(Arvore &);
@@ -19,6 +19,7 @@ int main () {
   return 0;
 }
 
+// Adiciona alguns valores na arvore
 void PredefineArvore(Arvore &A) {
   InsereAbbRec(A, 400);
   InsereAbbRec(A, 100);
@@ -29,6 +30,7 @@ void PredefineArvore(Arvore &A) {
   InsereAbbRec(A, 350);
 }
 
+// Menu da aplicação
 void Menu(Arvore A) {
   char opt = ' ';
   int value = 0;
@@ -76,21 +78,23 @@ void Menu(Arvore A) {
   } while (opt != 's');
 }
 
-// Posiciona cursor
+// Posiciona cursor da tela
 void Gotoxy(int x, int y) {
   cout << "\033[" << y << ";" << x << "H";
 }
 
+// Limpa tudo que está na tela
 void LimpaTela() {
   std::cout << "\033[2J\033[1;1H";
 }
 
-void imprimeArvore(Arvore A, int *x, int y, int posParentX, int *retCurrent) {
+// Função recursiva que desenha a arvore na tela
+void doImprimeArvore(Arvore A, int *x, int y, int posParentX, int *retCurrent) {
   if(A == nullptr) return;
 
   if (A->Esq != nullptr) {
     int posChildX = *x;
-    imprimeArvore(A->Esq, x, y + 3, -1, &posChildX);
+    doImprimeArvore(A->Esq, x, y + 3, -1, &posChildX);
 
     // Desenha ramo do pai até nó esquerdo.
     for (int i = posChildX + 4; i < *x + 2; i+= 1) {
@@ -128,14 +132,14 @@ void imprimeArvore(Arvore A, int *x, int y, int posParentX, int *retCurrent) {
   *x += 8;
 
   if (A->Dir != nullptr) { // A recursão a direita recebe posição do pai para desenho do ramo
-    imprimeArvore(A->Dir, x, y + 3, aux, nullptr);
+    doImprimeArvore(A->Dir, x, y + 3, aux, nullptr);
   }
 }
 
-// Imprime arvore no console
+// Função que prepara a impressão da arvore no console
 void ImprimeArvore(Arvore A) {
   int x = 40;
-  imprimeArvore(A, &x, 1, -1, nullptr);
+  doImprimeArvore(A, &x, 1, -1, nullptr);
   Gotoxy(0, 15);
   cout << endl;
 }

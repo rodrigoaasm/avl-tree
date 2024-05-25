@@ -13,6 +13,7 @@ typedef No* Arvore; // DEFINE TIPO ARVORE
 
 void IniciaArvore (Arvore &); // INICIA A ARVORE
 void InsereAbbRec (Arvore &, int); // INSERE NO - RECURSIVO
+void RemoveAbbRec (Arvore &, int); // REMOVE NÓ - RECURSIVO
 void Preordem (Arvore); // PERCURSO PRE-ORDEM
 void Ordem (Arvore); // PERCURSO EM ORDEM
 void Posordem (Arvore); // PERCURSO POS-ORDEM
@@ -21,11 +22,16 @@ void ApagaNo (Arvore &); // APAGA NO
 void ApagaArvore (Arvore &); // APAGA ARVORE
 int  ContaNos (Arvore); // CONTA NOS
 int  CalculaFatorBalanceamento(Arvore); //CALCULA BALANCEAMENTO
+void AtualizaAltura(Arvore &);
+void BalanceamentoAVL (Arvore &);
 void RotacionaEsquerda(Arvore &); // ROTACIONA A ESQUERDA
 void RotacionaDireita(Arvore &); // ROTACIONA A DIREITA
+void RotacionaEsquerdaDireita(Arvore &); // ROTAÇÃO DUPLA DIREITA
+void RotacionaDireitaEsquerda(Arvore &); // ROTAÇÃO DUPLA ESQUERDA
+void SubstituirPorMenor(Arvore &, Arvore &); // SUBSTITUIR POR MENOR
+void SubstituirPorMaior(Arvore &, Arvore &); // SUBSTITUIR POR MAIOR
 
 // IMPLEMENTACAO DAS FUNCOES
-
 // INICIA A ARVORE
 void IniciaArvore(Arvore &Raiz){
   Raiz = nullptr;
@@ -142,8 +148,7 @@ void BalanceamentoAVL (Arvore &A) {
 }
 
 // INSERCAO DE UM NO NA ARVORE - RECURSIVA
-void InsereAbbRec (Arvore &A, int Info){
-  
+void InsereAbbRec (Arvore &A, int Info){  
   if(A == nullptr){ // SE PONTEIRO NULO, INSERIR UM NOVO NO
     cout << " > Adiciona: " << Info << endl;
     A = new No;
